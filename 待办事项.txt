@@ -1,0 +1,34 @@
+---了解---
+切换mysql 版本为8.0
+
+mybatis会把记录数>1转换为true吗？？
+
+Swagger
+
+学习git，怎么使用命令行管理代码？
+---了解---
+
+---疑惑---
+stream().filter()可否使用？
+
+mybatis返回List<Long>失败？？--在resultmap里使用一个collection接收数据
+
+什么是弱引用？内存溢出与弱引用有什么关系？
+
+使用临时表去除mysql中重复的元素
+
+Spring BeanUtils怎么把string转换为enum
+
+select * from goods where concat(shop_name,goods_name) regexp '小浣熊|爽身粉|婴儿'
+
+delete from user where name in ( select * from (select name from user group by name having count(name) > 1 ) t1 )
+and id not in ( select * from (select max(id) from user group by name having count(name) > 1) t2);
+---疑惑---
+
+===笔记====
+
+Git 发现代码出现冲突。把源文件复制出来，使用reset命令，解决代码冲突。如果reset了解决不了，多reset几次。。。
+
+===笔记====
+
+

@@ -1,0 +1,69 @@
+GitHub
+account：JankenLv
+password：git-lv_1011
+mail：814076827@qq.com
+
+java代码处理多语言
+
+jackson转换为对象：Object o = mapper.readValue(json,Class<T extends Object>);
+
+jackson转换为对象集合： List<T extends Object> beanList = mapper.readValue(json, new TypeReference<List<T extends Object>>() {});
+
+获取json数组的某一个对象：    select * from tb where info->'$.name' = '特价促销'  or JSON_CONTAINS(info->'$[*].name', '"特价促销"', '$')
+
+
+# category_id, goood_category_lang
+1, {"id": 0, "lang": "zh-tw", "categoryName": "海鲜"}
+1, {"id": 0, "lang": "zh-cn", "categoryName": "数码产品"}
+1, {"id": 0, "lang": "en", "categoryName": "衣服"}
+
+
+=====预操作====
+MySql运行在safe-updates模式下，该模式会导致非主键条件下无法执行update或者delete命令。
+
+1、show variables like 'SQL_SAFE_UPDATES';查看开关状态。
+
+2、执行命令SET SQL_SAFE_UPDATES = 0;修改下数据库模式
+=====预操作====
+
+mysql--json--CURD：
+
+增
+INSERT INTO facts VALUES
+('{"name": "leo","age": 30,"sex": "male"}');
+
+删
+delete from facts where sentence->"$.age" = 30;
+
+改
+update facts set sentence = JSON_REPLACE(sentence,'$.sex',"female") WHERE sentence->"$.age" = 20;
+
+查
+select * from facts where sentence->"$.age" > 20;
+
+
+
+=============================
+增加商品分类：
+{
+  "categoryId": 2,
+  "goodCategoryLangVOs": [
+    {
+      "categoryName": "数码产品",
+      "id": 0,
+      "lang": "zh-cn"
+    },
+{
+      "categoryName": "海鲜",
+      "id": 0,
+      "lang": "zh-tw"
+    },
+{
+      "categoryName": "衣服",
+      "id": 0,
+      "lang": "en"
+    }
+  ]
+}
+
+查询商品分类：

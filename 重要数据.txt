@@ -1,0 +1,33 @@
+
+GitLab: http://172.30.22.31/
+account: jankin.js.lv@teleone.cn
+password: ljs12345
+
+企业邮箱：jankin.lu@teleone.cn
+密码：ljs12345
+
+Git远程仓库：http://172.30.22.31/csms/code/csms-back-project/csb.git
+
+调试端口：http://localhost:端口/swagger-ui.html
+
+本地MYSQL：
+account：root
+password：root123
+
+=====KEY POINT=====
+1、新增数据和更新数据都要做数据查重
+
+2、参数校验在controller层；数据查重在service层。
+
+3、CSMS获取语言环境：ReqEnvContext.getLanguage()
+
+4、统一异常类：ApplicationException
+
+5、统一异常枚举类：ApplicationErrorEnum
+
+6、统一常量类：在common2包下。。。
+
+7、git提交前，如果有其他人更新了，要先pull，才能push
+
+8、简体中文(中国)zh-cn|繁体中文(台湾地区)zh-tw|英文 en|葡文 pt
+=====KEY POINT=====
