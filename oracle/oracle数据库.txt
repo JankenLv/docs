@@ -1,0 +1,118 @@
+配置文件application.properties
+spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver
+spring.datasource.url = jdbc:oracle:thin:@//172.30.22.116:1521/CSMSDB
+/****对应数据库csms_xxx_dev,密码相同****/
+spring.datasource.username = csms_css_dev
+spring.datasource.password = csms_css_dev
+
+
+1)now()函数-> sysdate
+
+
+2)插入语句添加主键字段, 插入SQL添加selectKey以获取序列主键
+<insert id="insert" parameterType="com.teleone.cloud.csms.css.shopmanager.model.ShopInfoManager">
+    
+    <selectKey resultType="Long"  keyProperty="id" order="BEFORE">
+  	select shop_info_manager_s.nextval as id from dual
+    </selectKey>
+
+    insert into shop_info_manager 
+    (
+    SHOP_R_USER_ID,
+    shop_id, 
+    user_id
+    )
+    values 
+    (
+    #{id,jdbcType=INTEGER}, 
+    #{shopId,jdbcType=INTEGER}, 
+    #{userId,jdbcType=INTEGER}
+    )
+</insert>
+
+
+3)批量插入模板
+<insert id="insertBatch">
+	INSERT INTO shop_info_manager (SHOP_R_USER_ID, shop_id, user_id)
+	SELECT shop_info_manager_s.NEXTVAL,a.* FROM (
+	<foreach collection="shopManagers" item="item" separator="union all">
+		SELECT
+		#{item.shopId,jdbcType=VARCHAR},
+		#{item.userId,jdbcType=VARCHAR}
+		FROM dual
+	</foreach>
+	) a
+</insert>
+批量插入，同名字段需要加别名，如两个sysdate，需要加别名s1、s2
+
+
+1、模糊查询语法
+and (template_name like
+   '%'||#{searchContent,jdbcType=VARCHAR}||'%' 
+   or service_action like
+   '%'||#{searchContent,jdbcType=VARCHAR}||'%')
+
+
+2、加序列
+CREATE SEQUENCE 表名xx_s INCREMENT BY 1 NOMAXVALUE NOCYCLE CACHE 10;
+
+查看序列：
+
+
+3、group by方法
+SELECT
+      MAX(id) id,
+      menu_code,
+      MAX(menu_cn_name) menu_name,
+      MAX(parent_id) parent_id
+    FROM
+    (
+      SELECT
+        menuitem.id,
+        menupermission.menu_code,
+        menuitem.menu_cn_name,
+        menuitem.parent_id
+      FROM base_menu_r_permission_t menupermission
+      INNER JOIN base_menu_item_t menuitem ON menupermission.menu_code = menuitem.menu_code
+      WHERE UPPER(menuItem.app_name) = UPPER(#{appName, jdbcType=VARCHAR})
+    ) a
+    GROUP BY menu_code
+
+
+4、mybatis 整合 springboot 支持多数据库方法(databaseId)：
+在启动类中加入下面的代码：
+/**
+   * 自动识别使用的数据库类型
+   * 在mapper.xml中databaseId的值就是跟这里对应，
+   * 如果没有databaseId选择则说明该sql适用所有数据库
+   * */
+  @Bean
+  public DatabaseIdProvider getDatabaseIdProvider(){
+      DatabaseIdProvider databaseIdProvider = new VendorDatabaseIdProvider();
+      Properties properties = new Properties();
+      properties.setProperty("Oracle","oracle");
+      properties.setProperty("MySQL","mysql");
+      databaseIdProvider.setProperties(properties);
+      return databaseIdProvider;
+  }
+
+
+5、oracle数据库，字段名或序列名都不能超过30个字符？！
+特别注意：表名 加上 _id 会不会超长！！
+
+
+6、代表金额的数据库字段，统一类型：NUMBER(12,2) 
+
+
+7、
+ALTER TABLE WORK_INSTANCE_SUBSCRIBER RENAME COLUMN BUILDING TO BUILDING_TEMP;
+ALTER TABLE WORK_INSTANCE_SUBSCRIBER ADD BUILDING VARCHAR2(128);
+UPDATE WORK_INSTANCE_SUBSCRIBER SET BUILDING=TRIM(BUILDING_TEMP);
+ALTER TABLE WORK_INSTANCE_SUBSCRIBER DROP COLUMN BUILDING_TEMP;
+
+如果修改数据库字段的类型时, 若表已存在数据, 需要以上面方式去更新字段类型(先将原字段改名为一个临时字段, 然后新建一个要改成的类型字段, 将临时字段的值复制过去新的字段后, 再删除临时字段), thanks!
+
+
+8、关键字：escape
+使用 ESCAPE 关键字定义转义符。 在模式中，当转义符置于通配符之前时，该通配符就解释为普通字符
+WHERE ColumnA LIKE '%5/%%' ESCAPE '/'
